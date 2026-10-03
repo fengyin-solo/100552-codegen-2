@@ -8,6 +8,7 @@ const Deviation = () => import('@/views/deviation/index.vue')
 const Changecontrol = () => import('@/views/changecontrol/index.vue')
 const Cleanvalidate = () => import('@/views/cleanvalidate/index.vue')
 const Sterilize = () => import('@/views/sterilize/index.vue')
+const Calibration = () => import('@/views/calibration/index.vue')
 const Mediafill = () => import('@/views/mediafill/index.vue')
 const Watermonitor = () => import('@/views/watermonitor/index.vue')
 const Gowning = () => import('@/views/gowning/index.vue')
@@ -31,6 +32,7 @@ const router = createRouter({
     { path: '/changecontrol', name: 'changecontrol', component: Changecontrol },
     { path: '/cleanvalidate', name: 'cleanvalidate', component: Cleanvalidate },
     { path: '/sterilize', name: 'sterilize', component: Sterilize },
+    { path: '/calibration', name: 'calibration', component: Calibration },
     { path: '/mediafill', name: 'mediafill', component: Mediafill },
     { path: '/watermonitor', name: 'watermonitor', component: Watermonitor },
     { path: '/gowning', name: 'gowning', component: Gowning },

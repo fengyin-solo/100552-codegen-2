@@ -24,6 +24,38 @@
       </span>
     </p>
 
+    <section class="panel reminder-panel">
+      <h3>关联仪器校准状态</h3>
+      <p class="reminder-summary">
+        与仪器校准台账同一份到期提醒：逾期未确认 {{ calibrationOverdue }} 台，越界/超限挡回 {{ calibrationRejected }} 条
+      </p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>仪器编号</th>
+            <th>检测线</th>
+            <th>到期日期</th>
+            <th>到期提醒</th>
+            <th>台账状态</th>
+            <th>计量确认结论</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in calibrationItems" :key="item.id">
+            <td>{{ item.仪器编号 }}</td>
+            <td>{{ item.检测线 }}</td>
+            <td>{{ item.到期日期 }}</td>
+            <td>{{ item.逾期 ? `已逾期 ${-item.剩余天数} 天` : `剩 ${item.剩余天数} 天` }}</td>
+            <td>{{ item.status }}</td>
+            <td>{{ item.计量确认结论 || '—' }}</td>
+          </tr>
+          <tr v-if="!calibrationItems.length">
+            <td colspan="6" class="empty-state">暂无仪器校准提醒</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
     <form class="filter-bar" @submit.prevent="reload">
       <label v-for="field in filterFields" :key="field" class="filter-item">
         <span>{{ field }}</span>
@@ -79,6 +111,7 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { calibrationReminders, overdueUnconfirmed } from '@/api/calibration-service'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('sterilize')
@@ -92,6 +125,10 @@ const total = ref(0)
 const errorMessage = ref('')
 const filters = ref<Record<string, string>>({})
 const filterFields = columns.slice(0, 3)
+// 与校准台账页、运营概览取的是同一份到期提醒。
+const calibrationItems = ref(calibrationReminders().items)
+const calibrationOverdue = ref(0)
+const calibrationRejected = ref(0)
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
@@ -128,6 +165,10 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    const board = calibrationReminders()
+    calibrationItems.value = board.items
+    calibrationOverdue.value = overdueUnconfirmed(board).length
+    calibrationRejected.value = board.rejected.length
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '灭菌验证列表读取失败'
   }
