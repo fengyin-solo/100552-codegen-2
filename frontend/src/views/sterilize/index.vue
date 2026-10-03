@@ -63,6 +63,47 @@
       </tbody>
     </table>
 
+    <!-- 仪器校准状态反映到灭菌验证清单：与台账取的是同一份到期提醒 -->
+    <section class="ster-cal-panel">
+      <header class="panel-head">
+        <h3>灭菌检测线 · 仪器校准与计量确认状态</h3>
+        <RouterLink class="link" to="/instrumentcal">前往校准台账</RouterLink>
+      </header>
+      <p v-if="calAbnormalCount" class="panel-alert">
+        本检测线有 {{ calAbnormalCount }} 台仪器逾期或确认不合格，相关灭菌验证所用仪器应停用核查后再放行。
+      </p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>仪器编号</th>
+            <th>仪器名称</th>
+            <th>校准周期</th>
+            <th>上次校准日期</th>
+            <th>到期日期</th>
+            <th>计量确认结论</th>
+            <th>台账状态</th>
+            <th>到期提醒</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in calReminders" :key="item.id" :class="calRowClass(item.level, item.状态)">
+            <td>{{ item.仪器编号 }}</td>
+            <td>{{ item.仪器名称 }}</td>
+            <td>{{ item.校准周期 }}</td>
+            <td>{{ calLastDate(item.id) }}</td>
+            <td>{{ item.到期日期 }}</td>
+            <td>{{ item.计量确认结论 || '待计量组出具' }}</td>
+            <td>{{ item.状态 }}</td>
+            <td class="cal-reminder-cell">{{ item.text }}</td>
+          </tr>
+          <tr v-if="!calReminders.length">
+            <td colspan="8" class="empty-state">灭菌检测线暂无仪器台账记录</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="panel-note">提醒与台账页、运营概览同源，均由校准台账服务统一计算（业务日 {{ todayIso }}）。</p>
+    </section>
+
     <footer class="page-foot">
       <span>共 {{ total }} 条灭菌验证记录</span>
       <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
@@ -79,6 +120,8 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { listInstruments, remindersForSterilize } from '@/api/instrument-service'
+import { TODAY_ISO, type CalReminder, type CalStatus } from '@/data/instrument'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('sterilize')
@@ -98,6 +141,35 @@ const statusSummary = computed(() =>
     count: rows.value.filter((row) => String(row.status) === status).length,
   })),
 )
+
+// 灭菌检测线的仪器校准状态：直接消费台账服务，和台账页拿到的是同一份到期提醒。
+const todayIso = TODAY_ISO
+const calReminders = ref<CalReminder[]>([])
+const calInstruments = ref<EntryRow[]>([])
+const calAbnormalCount = computed(
+  () =>
+    calReminders.value.filter(
+      (item) => item.overdueUnconfirmed || item.状态 === ('已确认不合格' as CalStatus),
+    ).length,
+)
+
+function calLastDate(id: number): string {
+  const hit = calInstruments.value.find((row) => Number(row.id) === id)
+  return hit ? String(hit['上次校准日期'] ?? '—') : '—'
+}
+
+function calRowClass(level: CalReminder['level'], status: CalStatus): string {
+  if (status === '已确认不合格') {
+    return 'cal-row-bad'
+  }
+  if (level === 'overdue') {
+    return 'cal-row-overdue'
+  }
+  if (level === 'due-soon') {
+    return 'cal-row-soon'
+  }
+  return ''
+}
 
 function resetFilters() {
   filters.value = {}
@@ -128,6 +200,8 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    calReminders.value = remindersForSterilize()
+    calInstruments.value = listInstruments({ 检测线: '灭菌检测线' })
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '灭菌验证列表读取失败'
   }

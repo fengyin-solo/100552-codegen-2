@@ -35,3 +35,72 @@ body { margin: 0; background: #f6f8fb; color: #1f2937; }
 .error-text { color: #b42318; }
 .status-legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 10px; font-size: 12px; color: var(--muted); }
 .legend-item { background: #eef2f7; border-radius: 999px; padding: 2px 10px; }
+
+/* 仪器校准台账：周期分栏 + 逾期未确认专区 */
+.cal-controls { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; margin-bottom: 12px; }
+.cal-today { margin-left: auto; color: var(--muted); font-size: 12px; }
+.stat-danger { border-color: #f0a5a0 !important; background: #fef3f2; }
+.stat-warn { border-color: #f5d199 !important; background: #fffaeb; }
+.overdue-zone { border: 1px solid #e5484d; border-radius: 10px; background: #fff5f5; padding: 12px; margin-bottom: 14px; }
+.zone-title { margin: 0 0 10px; font-size: 15px; color: #b42318; display: flex; align-items: baseline; gap: 10px; }
+.zone-title small { font-weight: normal; font-size: 12px; color: #7a271a; }
+.zone-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.cal-board { display: grid; grid-template-columns: repeat(4, minmax(240px, 1fr)); gap: 10px; align-items: start; }
+.cal-column { background: #eef2f7; border: 1px solid var(--border); border-radius: 10px; padding: 8px; min-height: 120px; }
+.column-head { display: flex; justify-content: space-between; align-items: center; padding: 2px 4px 8px; }
+.column-head h3 { margin: 0; font-size: 14px; }
+.column-count { font-size: 12px; color: var(--muted); background: #fff; border-radius: 999px; padding: 1px 8px; }
+.column-body { display: flex; flex-direction: column; gap: 8px; }
+.column-empty { font-size: 12px; color: var(--muted); text-align: center; padding: 14px 0; }
+.cal-card { background: #fff; border: 1px solid var(--border); border-left-width: 4px; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+.cal-card.is-overdue, .cal-card.is-overdue-unconfirmed { border-left-color: #e5484d; background: #fff7f7; }
+.cal-card.is-due-soon { border-left-color: #e0a32e; background: #fffdf5; }
+.cal-card.is-rejected { border-left-color: #b42318; background: #fef3f2; }
+.card-head { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.card-code { font-size: 14px; }
+.card-name { margin: 0; font-size: 12px; color: var(--muted); }
+.card-status { font-size: 11px; border-radius: 999px; padding: 1px 8px; white-space: nowrap; }
+.tag-pending { background: #e2e8f0; color: #475569; }
+.tag-waiting { background: #dbeafe; color: #1d4ed8; }
+.tag-ok { background: #dcfae6; color: #176a3f; }
+.tag-bad { background: #fee4e2; color: #b42318; }
+.card-fields { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; font-size: 12px; }
+.card-fields div { display: flex; flex-direction: column; }
+.card-fields dt { color: var(--muted); font-size: 11px; }
+.card-fields dd { margin: 0; }
+.due-hot { color: #b42318; font-weight: 600; }
+.conclusion-ok { color: #176a3f; }
+.conclusion-bad { color: #b42318; font-weight: 600; }
+.conclusion-empty { color: var(--muted); }
+.card-reminder { margin: 0; font-size: 12px; border-radius: 6px; padding: 4px 6px; display: flex; gap: 6px; align-items: flex-start; }
+.reminder-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex: none; }
+.rem-overdue { background: #fee4e2; color: #7a271a; }
+.rem-overdue .reminder-dot { background: #e5484d; }
+.rem-due-soon { background: #fef3d8; color: #854d0e; }
+.rem-due-soon .reminder-dot { background: #e0a32e; }
+.rem-normal { color: var(--muted); }
+.rem-normal .reminder-dot { background: #94a3b8; }
+.card-actions { display: flex; gap: 10px; border-top: 1px dashed var(--border); padding-top: 6px; }
+.link:disabled { color: #94a3b8; cursor: not-allowed; }
+
+/* 弹窗表单 */
+.modal-mask { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45); display: flex; align-items: center; justify-content: center; z-index: 20; }
+.modal { background: #fff; border-radius: 10px; padding: 18px 20px; width: 420px; max-width: calc(100vw - 32px); max-height: calc(100vh - 48px); overflow: auto; }
+.modal h3 { margin: 0 0 10px; font-size: 16px; }
+.form-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; font-size: 13px; }
+.form-item span { color: var(--muted); font-size: 12px; }
+.form-item input, .form-item select, .cal-controls select, .cal-controls input { border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font: inherit; }
+.form-hint { font-size: 12px; color: var(--muted); background: #f1f5f9; border-radius: 6px; padding: 6px 8px; margin: 0 0 12px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+
+/* 灭菌验证清单中的校准状态面板 / 概览提醒区 */
+.ster-cal-panel, .dash-reminder { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-top: 16px; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.panel-head h3 { margin: 0; font-size: 15px; }
+.panel-alert { margin: 0 0 10px; padding: 8px 10px; background: #fef3f2; border: 1px solid #f0a5a0; color: #b42318; border-radius: 6px; font-size: 13px; }
+.panel-note { margin: 8px 0 0; font-size: 12px; color: var(--muted); }
+.cal-row-overdue td { background: #fff5f5; }
+.cal-row-bad td { background: #fef3f2; }
+.cal-row-soon td { background: #fffdf5; }
+.cal-reminder-cell { font-size: 12px; }
+.dash-reminder .stat-row { margin-bottom: 10px; }

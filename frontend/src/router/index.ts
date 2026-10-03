@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import Dashboard from '@/views/Dashboard.vue'
+const InstrumentCal = () => import('@/views/instrumentcal/index.vue')
 const Batchrecord = () => import('@/views/batchrecord/index.vue')
 const Cleanroom = () => import('@/views/cleanroom/index.vue')
 const Materialrelease = () => import('@/views/materialrelease/index.vue')
@@ -24,6 +25,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', name: 'dashboard', component: Dashboard },
+    { path: '/instrumentcal', name: 'instrumentcal', component: InstrumentCal },
     { path: '/batchrecord', name: 'batchrecord', component: Batchrecord },
     { path: '/cleanroom', name: 'cleanroom', component: Cleanroom },
     { path: '/materialrelease', name: 'materialrelease', component: Materialrelease },
